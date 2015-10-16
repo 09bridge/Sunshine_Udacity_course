@@ -71,6 +71,7 @@ public class ForecastFragment extends Fragment {
             fetchWeatherTask.execute(postal, units);
             return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
