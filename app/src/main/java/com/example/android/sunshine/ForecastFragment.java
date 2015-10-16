@@ -1,8 +1,10 @@
 package com.example.android.sunshine;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri.Builder;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -39,7 +41,8 @@ import android.widget.Toast;
 public class ForecastFragment extends Fragment {
 
     //http://api.openweathermap.org/data/2.5/forecast/daily?q=94043,us&mode=json&units=metric&cnt=7
-    protected String postal = "94043,us";
+
+    //protected String postal = "94043,us";
     protected String units = "metric";
     private ArrayAdapter<String> mForecastAdapter;
 
@@ -67,12 +70,19 @@ public class ForecastFragment extends Fragment {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_refresh) {
-            FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
-            fetchWeatherTask.execute(postal, units);
+            updateWeather();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void updateWeather() {
+        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = sharedPref.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default));
+        fetchWeatherTask.execute(location, units);
     }
 
     @Override
@@ -80,13 +90,6 @@ public class ForecastFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         List<String> forecast = new ArrayList<>();
-        forecast.add("Today-Sunny-30/15");
-        forecast.add("Tomorrow-Sunny-31/17");
-        forecast.add("Sat-Cloudy-25/15");
-        forecast.add("San-Sunny-28/16");
-        forecast.add("Mon-Rainy-24/13");
-        forecast.add("Tues-Cloudy-25/14");
-        forecast.add("Weds-Rainy-22/12");
         mForecastAdapter = new ArrayAdapter<>(getActivity(),
                 R.layout.list_item_forecast, R.id.list_item_forecast_textview, forecast);
         ListView listView = (ListView)rootView.findViewById(R.id.listView_forecast);
@@ -105,6 +108,12 @@ public class ForecastFragment extends Fragment {
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
     }
 
     public class FetchWeatherTask extends AsyncTask<String, Void, List> {
