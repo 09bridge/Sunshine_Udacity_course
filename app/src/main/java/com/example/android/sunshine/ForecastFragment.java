@@ -43,7 +43,7 @@ public class ForecastFragment extends Fragment {
     //http://api.openweathermap.org/data/2.5/forecast/daily?q=94043,us&mode=json&units=metric&cnt=7
 
     //protected String postal = "94043,us";
-    protected String units = "metric";
+    //protected String units = "metric";
     private ArrayAdapter<String> mForecastAdapter;
 
     public ForecastFragment() {
@@ -82,7 +82,7 @@ public class ForecastFragment extends Fragment {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String location = sharedPref.getString(getString(R.string.pref_location_key),
                 getString(R.string.pref_location_default));
-        fetchWeatherTask.execute(location, units);
+        fetchWeatherTask.execute(location);
     }
 
     @Override
@@ -98,7 +98,7 @@ public class ForecastFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String text= mForecastAdapter.getItem(position);
+                String text = mForecastAdapter.getItem(position);
                 //Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
                 Intent detailIntent = new Intent(getActivity(), DetailActivity.class)
                         .putExtra(Intent.EXTRA_TEXT, text);
@@ -120,8 +120,8 @@ public class ForecastFragment extends Fragment {
 
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
         String format = "json";
+        String units = "metric";
         int count = 7;
-
         //Time/date converse & JSON parsing code
 
         private String getReadableDateString(long time){
@@ -136,6 +136,20 @@ public class ForecastFragment extends Fragment {
          */
         private String formatHighLows(double high, double low) {
             // For presentation, assume the user doesn't care about tenths of a degree.
+            SharedPreferences sharedPref = PreferenceManager
+                    .getDefaultSharedPreferences(getActivity());
+            String unitCurrent = sharedPref.getString(getString(R.string.pref_temperature_key),
+                    getString(R.string.pref_temperature_metric));
+            String unitImperial = getString(R.string.pref_temperature_imperial);
+            String unitMetric = getString(R.string.pref_temperature_metric);
+
+            if(unitCurrent.equals(unitImperial)) {
+                high = (9.0/5.0)*high + 32.0;
+                low = (9.0/5.0)*low + 32.0;
+            } else if(!unitCurrent.equals(unitMetric)) {
+                Log.d(LOG_TAG, "Unit type not found: " + unitCurrent);
+            }
+
             long roundedHigh = Math.round(high);
             long roundedLow = Math.round(low);
 
@@ -208,6 +222,9 @@ public class ForecastFragment extends Fragment {
                 double high = temperatureObject.getDouble(OWM_MAX);
                 double low = temperatureObject.getDouble(OWM_MIN);
 
+
+
+
                 highAndLow = formatHighLows(high, low);
                 resultValues.add(day + " - " + description + " - " + highAndLow);
             }
@@ -235,7 +252,7 @@ public class ForecastFragment extends Fragment {
                     .appendPath("daily")
                     .appendQueryParameter("q", urls[0])
                     .appendQueryParameter("mode", format)
-                    .appendQueryParameter("units", urls[1])
+                    .appendQueryParameter("units", units)
                     .appendQueryParameter("cnt", Integer.toString(count))
                     .appendQueryParameter("appid", "bd82977b86bf27fb59a04b61b657fb6f");
             Log.d(LOG_TAG, "Built URI: " + b.build().toString());

@@ -7,8 +7,23 @@
     <string name="pref_location_label">Location</string>
 
         <!-- Key name for storing location in SharedPreferences [CHAR LIMIT=NONE] -->
-        <string name="pref_location_key" translatable="false">location</string>
+    <string name="pref_location_key" translatable="false">location</string>
 
         <!-- Default postal code for location preference [CHAR LIMIT=NONE] -->
-        <string name="pref_location_default" translatable="false">94043,us</string>
+    <string name="pref_location_default" translatable="false">94043,us</string>
+    <string name="pref_temperature_label">Temperature</string>
+    <string name="pref_temperature_key">temperature</string>
+    <string-array
+        name="pref_temperature_entries">
+        <item>Metric</item>
+        <item>Imperial</item>
+    </string-array>
+    <string-array
+        name="pref_temperature_values">
+        <item>C</item>
+        <item>F</item>
+    </string-array>
+    <string name="pref_temperature_metric">C</string>
+    <string name="pref_temperature_imperial">F</string>
+
 </resources>
