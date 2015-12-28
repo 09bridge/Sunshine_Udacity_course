@@ -254,7 +254,7 @@ public class ForecastFragment extends Fragment {
                     .appendQueryParameter("mode", format)
                     .appendQueryParameter("units", units)
                     .appendQueryParameter("cnt", Integer.toString(count))
-                    .appendQueryParameter("appid", "bd82977b86bf27fb59a04b61b657fb6f");
+                    .appendQueryParameter("appid", "78ee51ef32ebb065c6c93ce7a972130f");
             Log.d(LOG_TAG, "Built URI: " + b.build().toString());
 
             try {

@@ -8,6 +8,7 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -17,6 +18,7 @@ import java.net.URI;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    private final String LOG_TAG = MainActivity.class.getSimpleName();
 
 
     @Override
@@ -48,40 +50,28 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (id == R.id.action_map) {
-            try {
                 showMap();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    private void showMap() throws IOException{
+    private void showMap() {
 
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String location = sharedPref.getString(getString(R.string.pref_location_key),
                 getString(R.string.pref_location_default));
-        final Geocoder geocoder = new Geocoder(this);
-        Uri geoLocation = null;
-            List<Address> addresses = geocoder.getFromLocationName(location, 1);
-            if (addresses != null && !addresses.isEmpty()) {
-                Address address = addresses.get(0);
-                // Use the address as needed
-                geoLocation = Uri.parse("geo:" + address.getLatitude() + ","
-                        + address.getLongitude());
-            } else {
-                // Display appropriate message when Geocoder services are not available
-                Toast.makeText(this, "Unable to geocode zipcode", Toast.LENGTH_LONG).show();
-            }
+        Uri geoLocation = Uri.parse("geo:0,0?").buildUpon()
+                .appendQueryParameter("q", location)
+                .build();
+
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(geoLocation);
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
         } else {
-            Toast.makeText(this, "Map app not found", Toast.LENGTH_LONG).show();
+            Log.d(LOG_TAG, "Couldn't call " + location);
         }
     }
 }

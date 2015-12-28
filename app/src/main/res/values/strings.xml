@@ -26,5 +26,6 @@
     <string name="pref_temperature_metric">C</string>
     <string name="pref_temperature_imperial">F</string>
     <string name="action_map">Show location</string>
+    <string name="menu_action_share">Share</string>
 
 </resources>
